@@ -8,6 +8,27 @@ export default function Home() {
   const [totalTime, setTotalTime] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  const playBeep = () => {
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+
+    for (let i = 0; i < 3; i++) {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      const startTime = audioContext.currentTime + i * 0.7;
+
+      oscillator.frequency.setValueAtTime(800, startTime);
+      gainNode.gain.setValueAtTime(0.3, startTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.5);
+
+      oscillator.start(startTime);
+      oscillator.stop(startTime + 0.5);
+    }
+  };
+
   useEffect(() => {
     if (isActive && timeLeft > 0) {
       intervalRef.current = setInterval(() => {
@@ -19,6 +40,7 @@ export default function Home() {
       }
       if (timeLeft === 0 && isActive) {
         setIsActive(false);
+        playBeep();
       }
     }
 
@@ -117,6 +139,7 @@ export default function Home() {
             </button>
           </div>
         )}
+
       </div>
     </div>
   );
