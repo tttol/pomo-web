@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Wakelock from "./wakeLock";
 
 export default function Home() {
   const [timeLeft, setTimeLeft] = useState(0);
   const [isActive, setIsActive] = useState(false);
   const [totalTime, setTotalTime] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [wakeLock, setWakeLock] = useState<Wakelock>();
 
   const playBeep = () => {
     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -30,6 +32,7 @@ export default function Home() {
   };
 
   useEffect(() => {
+    setWakeLock(new Wakelock(null));
     if (isActive && timeLeft > 0) {
       intervalRef.current = setInterval(() => {
         setTimeLeft((time) => time - 1);
@@ -41,6 +44,7 @@ export default function Home() {
       if (timeLeft === 0 && isActive) {
         setIsActive(false);
         playBeep();
+        wakeLock?.enableScreenLock();
       }
     }
 
@@ -52,6 +56,7 @@ export default function Home() {
   }, [isActive, timeLeft]);
 
   const startTimer = (minutes: number) => {
+    wakeLock?.disableScreenLock();
     console.log(`Starting timer for ${minutes} minutes`);
     const seconds = minutes * 60;
     setTimeLeft(seconds);
@@ -61,6 +66,7 @@ export default function Home() {
   };
 
   const stopTimer = () => {
+    wakeLock?.enableScreenLock();
     setIsActive(false);
     setTimeLeft(0);
     setTotalTime(0);
@@ -114,14 +120,14 @@ export default function Home() {
           <button
             onClick={() => startTimer(25)}
             disabled={isActive}
-            className="font-bold px-12 py-6 text-3xl bg-green-500 text-white rounded-2xl hover:bg-red-600 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors mr-8"
+            className="font-bold px-12 py-6 text-3xl bg-green-500 text-white rounded-2xl hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors mr-8"
           >
             25 min
           </button>
           <button
             onClick={() => startTimer(5)}
             disabled={isActive}
-            className="font-bold px-12 py-6 text-3xl bg-sky-500 text-white rounded-2xl hover:bg-green-600 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
+            className="font-bold px-12 py-6 text-3xl bg-sky-500 text-white rounded-2xl hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
           >
             5 min
           </button>
