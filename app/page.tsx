@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Wakelock from "./wakeLock";
+import Wakelock from "./wake-lock";
 
 export default function Home() {
   const [timeLeft, setTimeLeft] = useState(0);

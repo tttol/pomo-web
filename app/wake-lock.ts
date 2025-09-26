@@ -1,4 +1,4 @@
-class Wakelock {
+class WakeLock {
   private wakeLock: WakeLockSentinel | null;
 
   constructor(wakeLock: WakeLockSentinel | null) {
@@ -16,4 +16,4 @@ class Wakelock {
   }
 }
 
-export default Wakelock;
+export default WakeLock;
